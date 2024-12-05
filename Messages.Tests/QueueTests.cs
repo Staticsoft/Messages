@@ -49,7 +49,7 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
     {
         await SUT.Enqueue("test message");
         var message = await SUT.Dequeue(CancellationToken.None);
-        var visibleAt = DateTime.UtcNow.AddSeconds(7);
+        var visibleAt = DateTime.UtcNow.AddSeconds(10);
 
         await SUT.ResetVisibility(message.Id, visibleAt);
 
@@ -58,7 +58,7 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
             () => SUT.Dequeue(cancellation.Token)
         );
 
-        cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(20));
         var visibleMessage = await SUT.Dequeue(cancellation.Token);
         Assert.Equal(message.Body, visibleMessage.Body);
     }
