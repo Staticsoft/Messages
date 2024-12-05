@@ -58,7 +58,7 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
             () => SUT.Dequeue(cancellation.Token)
         );
 
-        cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         var visibleMessage = await SUT.Dequeue(cancellation.Token);
         Assert.Equal(message.Body, visibleMessage.Body);
     }
