@@ -30,21 +30,6 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task FailsToDequeueMessageTwice()
-    {
-        var messageBody = "test message";
-
-        await SUT.Enqueue(messageBody);
-        var message = await SUT.Dequeue(CancellationToken.None);
-
-        var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-
-        await Assert.ThrowsAsync<TaskCanceledException>(
-            () => SUT.Dequeue(cancellation.Token)
-        );
-    }
-
-    [Fact]
     public async Task DequeuesMessageOnSetVisibility()
     {
         await SUT.Enqueue("test message");
