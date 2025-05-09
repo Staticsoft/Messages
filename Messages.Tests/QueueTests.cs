@@ -63,7 +63,7 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task FailsToDequeueMessageInvisibleMessage()
+    public async Task FailsToDequeueInvisibleMessage()
     {
         await SUT.Enqueue("test message");
         await Task.Delay(Invisibility * 2);
