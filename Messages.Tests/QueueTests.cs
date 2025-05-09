@@ -62,6 +62,21 @@ public abstract class QueueTests : TestBase<Queue>, IAsyncLifetime
         );
     }
 
+    [Fact]
+    public async Task FailsToDequeueInvisibleMessage()
+    {
+        await SUT.Enqueue("test message");
+        await Task.Delay(Invisibility * 2);
+
+        await SUT.Dequeue(CancellationToken.None);
+
+        await Assert.ThrowsAsync<TaskCanceledException>(async () =>
+        {
+            var cancellation = new CancellationTokenSource(Invisibility * 0.5);
+            await SUT.Dequeue(cancellation.Token);
+        });
+    }
+
     public async Task InitializeAsync()
     {
         await Assert.ThrowsAsync<TaskCanceledException>(async () =>
