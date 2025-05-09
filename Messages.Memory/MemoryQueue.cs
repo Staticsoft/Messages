@@ -13,7 +13,6 @@ public class MemoryQueue(
         public required Queue.Message Data { get; init; }
     }
 
-    readonly SemaphoreSlim Lock = new(1, 1);
     readonly MemoryQueueOptions Options = options;
     readonly ConcurrentDictionary<string, VisibleMessage> Messages = [];
 
@@ -34,10 +33,7 @@ public class MemoryQueue(
             message = GetMessage();
         }
 
-        await Lock.WaitAsync(cancellation);
-
-        message.VisibleAt += Options.Invisibility;
-        Lock.Release();
+        message.VisibleAt = DateTime.UtcNow + Options.Invisibility;
         return message.Data;
     }
 
@@ -47,17 +43,17 @@ public class MemoryQueue(
             .OrderBy(_ => Random.Shared.Next())
             .FirstOrDefault();
 
-    public async Task ResetVisibility(string messageId, DateTime visibleAt)
+    public Task ResetVisibility(string messageId, DateTime visibleAt)
     {
-        await Lock.WaitAsync();
         Messages[messageId].VisibleAt = visibleAt;
-        Lock.Release();
+
+        return Task.CompletedTask;
     }
 
-    public async Task Delete(string messageId)
+    public Task Delete(string messageId)
     {
-        await Lock.WaitAsync();
         Messages.TryRemove(messageId, out var _);
-        Lock.Release();
+
+        return Task.CompletedTask;
     }
 }
