@@ -29,7 +29,7 @@ public class MemoryQueue(
         var message = GetMessage();
         while (message == null)
         {
-            await Task.Delay(1000, cancellation);
+            await Task.Delay(Options.PollingInterval, cancellation);
             message = GetMessage();
         }
 
